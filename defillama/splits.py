@@ -1,7 +1,21 @@
 import csv
 import os
 
+FILES = [
+    "aries-markets",
+    "avalon-usda",
+    "benqi-lending",
+    "dolomite",
+    "echo-lending",
+    "lista-lending",
+    "navi-lending",
+    "silo-v2",
+    "suilend",
+    "yei-finance"
+]
+
 def split_csv_by_chain(input_csv):
+    name = input_csv.split('.')[0]
     with open(input_csv, mode='r', newline='') as file:
         reader = list(csv.reader(file))
 
@@ -43,10 +57,10 @@ def split_csv_by_chain(input_csv):
                     chain_name = chain_info
                     chain_columns.setdefault(chain_name, {})['tvl'] = idx
 
-    os.makedirs("output", exist_ok=True)
+    os.makedirs(name + "_output", exist_ok=True)
 
     for chain, cols in chain_columns.items():
-        output_file = os.path.join("output", f"{chain}.csv")
+        output_file = os.path.join(name + "_output", f"{chain}.csv")
         with open(output_file, mode='w', newline='') as file:
             writer = csv.writer(file)
             headers = ["Date", "Timestamp", "TVL", "Total Supply"]
@@ -66,7 +80,7 @@ def split_csv_by_chain(input_csv):
                 writer.writerow(new_row)
 
     if 'tvl' in total_case:
-        output_file = os.path.join("output", "total.csv")
+        output_file = os.path.join(name + "_output", "total.csv")
         with open(output_file, mode='w', newline='') as file:
             writer = csv.writer(file)
             headers = ["Date", "Timestamp", "TVL", "Total Supply"]
@@ -86,4 +100,5 @@ def split_csv_by_chain(input_csv):
                 writer.writerow(new_row)
 
 if __name__ == "__main__":
-    split_csv_by_chain("maple.csv")
+    for item in FILES:
+        split_csv_by_chain(item + ".csv")
