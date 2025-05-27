@@ -3,6 +3,8 @@ import csv
 from datetime import datetime
 from collections import defaultdict
 
+BORROW_INCLUDED = True
+
 def read_file_ratios(file_path):
     ratios = {}
     with open(file_path, mode='r', newline='') as f:
@@ -13,7 +15,7 @@ def read_file_ratios(file_path):
                 supply = float(row["Total Supply"])
                 borrow = float(row["Total Borrow"])
                 if supply != 0:
-                    ratio = borrow / supply
+                    ratio = borrow / (borrow + supply) if BORROW_INCLUDED else borrow / supply
                     ratios[date] = ratio
             except Exception as e:
                 print(f"Skipping row in {file_path}: {row} (Error: {e})")
@@ -48,4 +50,4 @@ def combine_ratios(folder_path, output_file):
     print(f"Combined CSV written to: {output_file}")
 
 if __name__ == "__main__":
-    combine_ratios(folder_path="totals", output_file="combined.csv")
+    combine_ratios(folder_path="totals", output_file="combined_borrows_included.csv")
